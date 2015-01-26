@@ -22,15 +22,17 @@ import scala.concurrent.duration._
  */
 object HttpLoader {
   def main(args: Array[String]): Unit = {
-    for (i <- 1 to 20) {
+    for (i <- 1 to 10) {
       implicit val actorSystem = ActorSystem()
       implicit val timeout = Timeout(60.second)
 
-      val host = "192.168.59.103"
+//      val host = "192.168.59.103:9090"
+      val host = "104.131.98.252:9090"
+//      val host = "localhost:8080"
 
-      val url = s"http://$host:9090/request"
+      val url = s"http://$host/request"
 
-      val reqs = List.fill(5)(-1)
+      val reqs = List.fill(1)(-1)
 
       val responses: List[Future[HttpResponse]] =
         reqs.map {
@@ -41,8 +43,11 @@ object HttpLoader {
                   entity = HttpEntity(`application/json`,
                     """{"title": "fountain", "titleRus": "фонтан", "year": 1988}"""))).mapTo[HttpResponse]
 
+//              (IO(Http) ?
+//                HttpRequest(method = GET, uri = Uri("http://echo.jsontest.com/key/value"))).mapTo[HttpResponse]
+
             response onComplete {
-              case Success(res) => println(res.entity)
+              case Success(res) => println(res.entity.asString)
               case _ => println("error")
             }
 
